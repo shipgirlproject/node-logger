@@ -56,7 +56,7 @@ enum LogLevel {
 	DEBUG = 'DEBUG'
 }
 
-const consoleLevelColors: ConsoleLevelColors = {
+const defaultConsoleLevelColors: ConsoleLevelColors = {
 	INFO: consoleStyles.FgCyan,
 	WARN: consoleStyles.FgYellow,
 	ERROR: consoleStyles.FgRed,
@@ -82,13 +82,23 @@ export class Logger {
 
 	private hashCache: Record<string, number> = {};
 
-	constructor(
-		private module: string,
-		private config = {
-			debugMode: defaultDebugMode,
-			consoleLevelColors: consoleLevelColors
-		}
-	) {}
+	private module: string;
+	private debugMode: boolean;
+	private consoleLevelColors: ConsoleLevelColors;
+
+	constructor({
+		module,
+		debugMode = defaultDebugMode,
+		consoleLevelColors = defaultConsoleLevelColors
+	}: {
+		module: string;
+		debugMode?: boolean;
+		consoleLevelColors?: ConsoleLevelColors;
+	}) {
+		this.module = module;
+		this.debugMode = debugMode;
+		this.consoleLevelColors = consoleLevelColors;
+	}
 
 	info(msg: unknown) {
 		this.log(msg, LogLevel.INFO);
@@ -103,7 +113,7 @@ export class Logger {
 	}
 
 	debug(msg: unknown) {
-		if (this.config.debugMode) this.log(msg, LogLevel.DEBUG);
+		if (this.debugMode) this.log(msg, LogLevel.DEBUG);
 	}
 
 	exception(exception: string, msg: string) {
@@ -118,7 +128,7 @@ export class Logger {
 		const messageShouldUseColor = (typeof msg === 'string') && shouldUseColor;
 
 		const now = new Date().toISOString();
-		const levelColor = shouldUseColor ? consoleLevelColors[level] : '';
+		const levelColor = shouldUseColor ? this.consoleLevelColors[level] : '';
 		const moduleColor = consoleModuleColors[this.intHash(this.module, consoleModuleColors.length)];
 
 		const timePart = shouldUseColor ? `${(level === LogLevel.DEBUG) ? consoleStyles.FgGray : consoleStyles.FgCyan}${now}${consoleStyles.Reset}` : now;
