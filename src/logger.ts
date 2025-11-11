@@ -1,5 +1,6 @@
 import process from 'node:process';
 import { supportsColor } from './supports-color.ts';
+import { checkDebug } from './util.ts';
 
 const consoleStyles = {
 	Reset: '\x1b[0m',
@@ -69,6 +70,8 @@ export interface ConsoleLevelColors {
 	DEBUG: string;
 }
 
+const defaultDebugMode = checkDebug();
+
 export class Logger {
 	public hideLog: Record<string, string[]> = {
 		info: [],
@@ -82,7 +85,7 @@ export class Logger {
 	constructor(
 		private module: string,
 		private config = {
-			debugMode: process.env.NODE_ENV !== 'production',
+			debugMode: defaultDebugMode,
 			consoleLevelColors: consoleLevelColors
 		}
 	) {}
