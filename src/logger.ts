@@ -81,7 +81,10 @@ export class Logger {
 
 	constructor(
 		private module: string,
-		private config = { debugMode: true, consoleLevelColors: consoleLevelColors }
+		private config = {
+			debugMode: process.env.NODE_ENV !== 'production',
+			consoleLevelColors: consoleLevelColors
+		}
 	) {}
 
 	info(msg: unknown) {
