@@ -9,5 +9,9 @@ export function hasFlag(flag: string) {
 }
 
 export function checkDebug() {
-	return !hasFlag('no-debug') || hasFlag('debug') || (process.env.NODE_ENV !== 'production');
+	if (hasFlag('no-debug')) return false;
+	if (hasFlag('debug')) return true;
+	if (process.env.NODE_ENV !== 'production') return true;
+
+	return false;
 }
