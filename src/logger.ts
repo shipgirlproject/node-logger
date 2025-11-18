@@ -70,42 +70,42 @@ const defaultDebugMode = checkDebug();
 export class Logger {
 	private hashCache: Record<string, number> = {};
 
-	private module: string;
+	private defaultModule: string;
 	private debugMode: boolean;
 	private consoleLevelColors: ConsoleLevelColors;
 
 	constructor({
-		module,
+		defaultModule,
 		debugMode = defaultDebugMode,
 		consoleLevelColors = defaultConsoleLevelColors
 	}: {
-		module: string;
+		defaultModule: string;
 		debugMode?: boolean;
 		consoleLevelColors?: ConsoleLevelColors;
 	}) {
-		this.module = module;
+		this.defaultModule = defaultModule;
 		this.debugMode = debugMode;
 		this.consoleLevelColors = consoleLevelColors;
 	}
 
-	info(msg: unknown) {
-		this.log(msg, LogLevel.INFO);
+	info(msg: unknown, module?: string) {
+		this.log(msg, LogLevel.INFO, module);
 	}
 
-	warn(msg: unknown) {
-		this.log(msg, LogLevel.WARN);
+	warn(msg: unknown, module?: string) {
+		this.log(msg, LogLevel.WARN, module);
 	}
 
-	error(msg: unknown) {
-		this.log(msg, LogLevel.ERROR);
+	error(msg: unknown, module?: string) {
+		this.log(msg, LogLevel.ERROR, module);
 	}
 
-	debug(msg: unknown) {
-		if (this.debugMode) this.log(msg, LogLevel.DEBUG);
+	debug(msg: unknown, module?: string) {
+		if (this.debugMode) this.log(msg, LogLevel.DEBUG, module);
 	}
 
-	exception(exception: string) {
-		this.log(exception, LogLevel.ERROR);
+	exception(exception: string, module?: string) {
+		this.log(exception, LogLevel.ERROR, module);
 		process.exit(1);
 	}
 
@@ -113,16 +113,18 @@ export class Logger {
 		this.debugMode = debugMode;
 	}
 
-	private log(msg: unknown, level: LogLevel) {
+	private log(msg: unknown, level: LogLevel, module?: string) {
+		module ??= this.defaultModule;
+
 		const shouldUseColor = ((level === LogLevel.ERROR) || (level === LogLevel.WARN)) ? supportsColor.stderr : supportsColor.stdout;
 		const messageShouldUseColor = (typeof msg === 'string') && shouldUseColor;
 
 		const now = new Date().toISOString();
 		const levelColor = shouldUseColor ? this.consoleLevelColors[level] : '';
-		const moduleColor = consoleModuleColors[this.intHash(this.module, consoleModuleColors.length)];
+		const moduleColor = consoleModuleColors[this.intHash(module, consoleModuleColors.length)];
 
 		const timePart = shouldUseColor ? `${(level === LogLevel.DEBUG) ? consoleStyles.FgGray : consoleStyles.FgCyan}${now}${consoleStyles.Reset}` : now;
-		const modulePart = shouldUseColor ? `[${moduleColor}${this.module}${consoleStyles.Reset}]` : `[${this.module}]`;
+		const modulePart = shouldUseColor ? `[${moduleColor}${module}${consoleStyles.Reset}]` : `[${module}]`;
 		const levelPart = shouldUseColor ? `${levelColor}${level}:${consoleStyles.Reset}` : `${level}:`;
 
 		switch (level) {
