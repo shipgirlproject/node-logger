@@ -109,6 +109,10 @@ export class Logger {
 		process.exit(1);
 	}
 
+	setDebugMode(debugMode: boolean) {
+		this.debugMode = debugMode;
+	}
+
 	private log(msg: unknown, level: LogLevel) {
 		const shouldUseColor = ((level === LogLevel.ERROR) || (level === LogLevel.WARN)) ? supportsColor.stderr : supportsColor.stdout;
 		const messageShouldUseColor = (typeof msg === 'string') && shouldUseColor;
