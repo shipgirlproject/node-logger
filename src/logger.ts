@@ -63,23 +63,11 @@ const defaultConsoleLevelColors: ConsoleLevelColors = {
 	DEBUG: consoleStyles.FgPink
 };
 
-export interface ConsoleLevelColors {
-	INFO: string;
-	WARN: string;
-	ERROR: string;
-	DEBUG: string;
-}
+export type ConsoleLevelColors = Record<LogLevel, string>;
 
 const defaultDebugMode = checkDebug();
 
 export class Logger {
-	public hideLog: Record<string, string[]> = {
-		info: [],
-		warn: [],
-		error: [],
-		debug: []
-	};
-
 	private hashCache: Record<string, number> = {};
 
 	private module: string;
@@ -122,8 +110,6 @@ export class Logger {
 	}
 
 	private log(msg: unknown, level: LogLevel) {
-		if (this.hideLog[level.toLowerCase()]?.includes(this.module.toLowerCase())) return;
-
 		const shouldUseColor = ((level === LogLevel.ERROR) || (level === LogLevel.WARN)) ? supportsColor.stderr : supportsColor.stdout;
 		const messageShouldUseColor = (typeof msg === 'string') && shouldUseColor;
 
