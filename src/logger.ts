@@ -104,8 +104,8 @@ export class Logger {
 		if (this.debugMode) this.log(msg, LogLevel.DEBUG);
 	}
 
-	exception(exception: string, msg?: string) {
-		this.log(msg ? `${msg}: ${exception}` : exception, LogLevel.ERROR);
+	exception(exception: string) {
+		this.log(exception, LogLevel.ERROR);
 		process.exit(1);
 	}
 
